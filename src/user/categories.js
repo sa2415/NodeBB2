@@ -31,89 +31,119 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = __importStar(require("lodash"));
-const db = __importStar(require("../database"));
-const categories = __importStar(require("../categories"));
-const plugins = __importStar(require("../plugins"));
-function default_1(User) {
-    User.setCategoryWatchState = function (uid, cids, state) {
+const database_1 = __importDefault(require("../database"));
+const categories_1 = __importDefault(require("../categories"));
+const plugins_1 = __importDefault(require("../plugins"));
+const User = {
+    setCategoryWatchState(uid, cids, state) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(parseInt(uid.toString(), 10) > 0)) {
+            if (!(parseInt(String(uid), 10) > 0)) {
                 return;
             }
-            const isStateValid = Object.values(categories.watchStates).includes(parseInt(state.toString(), 10));
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+            const isStateValid = Object.values(categories_1.default.watchStates).includes(parseInt(String(state), 10));
             if (!isStateValid) {
                 throw new Error('[[error:invalid-watch-state]]');
             }
-            // Ensure cids is an array of numbers or single number
-            const cidsArray = Array.isArray(cids) ? cids : [cids];
-            // Check if any cid is invalid
-            const exists = yield categories.exists(cidsArray);
+            cids = Array.isArray(cids) ? cids : [cids];
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+            const exists = yield categories_1.default.exists(cids);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             if (exists.includes(false)) {
                 throw new Error('[[error:no-category]]');
             }
-            // Use map on cidsArray to create the sorted sets keys
-            const sortedSetKeys = cidsArray.map((cid) => `cid:${cid}:uid:watch:state`);
-            yield db.sortedSetsAdd(sortedSetKeys, state, uid);
-            // await db.sortedSetsAdd(cids.map((cid: number) => `cid:${cid}:uid:watch:state`), state, uid);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            yield database_1.default.sortedSetsAdd(cids.map(cid => `cid:${cid}:uid:watch:state`), state, uid);
         });
-    };
-    User.getCategoryWatchState = function (uid) {
+    },
+    getCategoryWatchState(uid) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(parseInt(uid.toString(), 10) > 0)) {
+            if (!(parseInt(String(uid), 10) > 0)) {
                 return {};
             }
-            const cids = yield categories.getAllCidsFromSet('categories:cid');
-            const states = yield categories.getWatchState(cids, uid);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+            const cids = yield categories_1.default.getAllCidsFromSet('categories:cid');
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+            const states = yield categories_1.default.getWatchState(cids, uid);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
             return _.zipObject(cids, states);
         });
-    };
-    User.getIgnoredCategories = function (uid) {
+    },
+    getIgnoredCategories(uid) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(parseInt(uid.toString(), 10) > 0)) {
+            if (!(parseInt(String(uid), 10) > 0)) {
                 return [];
             }
-            const cids = yield User.getCategoriesByStates(uid, [categories.watchStates.ignoring]);
-            const result = yield plugins.hooks.fire('filter:user.getIgnoredCategories', {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+            const cids = yield User.getCategoriesByStates(uid, [categories_1.default.watchStates.ignoring]);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+            const result = yield plugins_1.default.hooks.fire('filter:user.getIgnoredCategories', {
                 uid: uid,
                 cids: cids,
             });
             return result.cids;
         });
-    };
-    User.getWatchedCategories = function (uid) {
+    },
+    getWatchedCategories(uid) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(parseInt(uid.toString(), 10) > 0)) {
+            if (!(parseInt(String(uid), 10) > 0)) {
                 return [];
             }
-            const cids = yield User.getCategoriesByStates(uid, [categories.watchStates.watching]);
-            const result = yield plugins.hooks.fire('filter:user.getWatchedCategories', {
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+            const cids = yield User.getCategoriesByStates(uid, [categories_1.default.watchStates.watching]);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+            const result = yield plugins_1.default.hooks.fire('filter:user.getWatchedCategories', {
                 uid: uid,
                 cids: cids,
             });
             return result.cids;
         });
-    };
-    User.getCategoriesByStates = function (uid, states) {
+    },
+    getCategoriesByStates(uid, states) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!(parseInt(uid.toString(), 10) > 0)) {
-                return yield categories.getAllCidsFromSet('categories:cid');
+            if (!(parseInt(String(uid), 10) > 0)) {
+                // The next line calls a function in a module that has not been updated to TS yet
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+                return yield categories_1.default.getAllCidsFromSet('categories:cid');
             }
-            const cids = yield categories.getAllCidsFromSet('categories:cid');
-            const userState = yield categories.getWatchState(cids, uid);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+            const cids = yield categories_1.default.getAllCidsFromSet('categories:cid');
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+            const userState = yield categories_1.default.getWatchState(cids, uid);
             return cids.filter((cid, index) => states.includes(userState[index]));
         });
-    };
-    User.ignoreCategory = function (uid, cid) {
+    },
+    ignoreCategory(uid, cid) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield User.setCategoryWatchState(uid, cid, categories.watchStates.ignoring);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+            yield User.setCategoryWatchState(uid, cid, categories_1.default.watchStates.ignoring);
         });
-    };
-    User.watchCategory = function (uid, cid) {
+    },
+    watchCategory(uid, cid) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield User.setCategoryWatchState(uid, cid, categories.watchStates.watching);
+            // The next line calls a function in a module that has not been updated to TS yet
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+            yield User.setCategoryWatchState(uid, cid, categories_1.default.watchStates.watching);
         });
-    };
-}
-exports.default = default_1;
+    },
+};
+exports.default = User;
