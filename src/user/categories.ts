@@ -5,7 +5,7 @@ import categories from '../categories';
 import plugins from '../plugins';
 
 
-interface UserTS {
+interface UserT {
     setCategoryWatchState: (uid: number, cids: number | number[], state: number)=> Promise<void>;
     getCategoryWatchState: (uid: number)=> Promise<{ [key: number]: number }>;
     getIgnoredCategories: (uid: number)=> Promise<number[]>;
@@ -15,7 +15,7 @@ interface UserTS {
     watchCategory: (uid: number, cid: number)=> Promise<void>;
   }
 
-export = function (User: UserTS) {
+export = function (User: UserT) {
     User.setCategoryWatchState = async function (uid: number, cids: number | number[], state: number) {
         if (!(parseInt(String(uid), 10) > 0)) {
             return;
