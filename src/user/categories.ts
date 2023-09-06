@@ -1,3 +1,4 @@
+
 import _ from 'lodash';
 import db from '../database';
 import categories from '../categories';
@@ -120,4 +121,5 @@ export = function (User: UserTS) {
         await User.setCategoryWatchState(uid, cid, categories.watchStates.watching);
     };
 };
+
 
